@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     TAVILY_API_KEY: str
     PINECONE_INDEX: str = "medical-agent-local-embeddings"
     LOCAL_EMBED_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
-    GROQ_CHAT_MODEL: str = "llama-3.3-70b-versatile"
-    GROQ_VISION_MODEL: str = "meta-llama/llama-4-scout-17b-16e-instruct"
+    GROQ_CHAT_MODEL: str = "qwen/qwen3.8-27b"
+    GROQ_VISION_MODEL: str = "qwen/qwen3.8-27b"
     API_TOKEN: str
     ALLOWED_ORIGINS: str = "http://localhost:8000,http://127.0.0.1:8000"
 

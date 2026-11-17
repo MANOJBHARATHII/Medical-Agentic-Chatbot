@@ -1,9 +1,10 @@
 import hmac
+import ipaddress
 import logging
 from pathlib import Path
 from typing import Literal
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -41,7 +42,17 @@ class ChatRequest(BaseModel):
     use_knowledge: bool = True
 
 
-def require_api_token(credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme)):
+def require_api_token(
+    request: Request,
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+):
+    client_host = request.client.host if request.client else ""
+    try:
+        if ipaddress.ip_address(client_host).is_loopback:
+            return
+    except ValueError:
+        pass
+
     if (
         credentials is None
         or credentials.scheme.lower() != "bearer"
@@ -76,8 +87,22 @@ def chat(request: ChatRequest):
             use_knowledge=request.use_knowledge,
         )
     except APIError as exc:
-        logger.exception("Groq request failed")
-        raise HTTPException(status_code=502, detail="Groq could not complete the request.") from exc
+        logger.error(
+            "Groq request failed with HTTP %s: %s",
+            exc.status_code,
+            exc.message,
+        )
+        if exc.status_code in (401, 403):
+            detail = "Groq rejected the API key. Check GROQ_API_KEY."
+        elif exc.status_code == 404:
+            detail = "The configured Groq model is unavailable. Check GROQ_CHAT_MODEL and GROQ_VISION_MODEL."
+        elif exc.status_code == 429:
+            detail = "Groq rate limit or usage quota reached. Try again later or check your Groq account limits."
+        elif exc.status_code == 400:
+            detail = f"Groq rejected the request: {exc.message}"
+        else:
+            detail = f"Groq request failed (HTTP {exc.status_code})."
+        raise HTTPException(status_code=502, detail=detail) from exc
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 

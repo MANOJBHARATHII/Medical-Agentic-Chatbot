@@ -4,42 +4,97 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Medical Information Assistant</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta name="theme-color" content="#f7f6f2">
+    <link rel="icon" type="image/svg+xml" href="/static/medical-icon.svg">
+    <link rel="stylesheet" href="/static/style.css?v=4">
   </head>
   <body>
-    <main class="app">
-      <header>
-        <p class="eyebrow">GROQ-POWERED</p>
-        <h1>Medical Information Assistant</h1>
-        <p class="notice">For general information only; not a diagnosis or a replacement for professional care. For emergencies, contact local emergency services.</p>
-      </header>
-
-      <section class="settings" aria-label="Connection settings">
-        <label for="api-token">App API token</label>
-        <input id="api-token" type="password" autocomplete="off" placeholder="Enter API_TOKEN from your .env file">
-      </section>
-
-      <section id="messages" class="messages" aria-live="polite">
-        <article class="message assistant">
-          <strong>Assistant</strong>
-          <p>Ask a health-information question. You can optionally attach an image or search your ingested reference book.</p>
-        </article>
-      </section>
-
-      <form id="chat-form" class="composer">
-        <label class="knowledge-toggle">
-          <input id="use-knowledge" type="checkbox">
-          Search the reference knowledge base
-        </label>
-        <textarea id="prompt" rows="3" maxlength="12000" required placeholder="Type your question..."></textarea>
-        <div class="composer-actions">
-          <label class="file-button" for="image">Attach image</label>
-          <input id="image" type="file" accept="image/*" hidden>
-          <span id="image-name" class="image-name"></span>
-          <button id="send" type="submit">Send</button>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="/static/medical-icon.svg" alt="" class="brand-icon">
+          <span>Care Companion</span>
         </div>
-      </form>
-    </main>
-    <script src="/static/app.js" defer></script>
+        <button id="new-chat" class="new-chat" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          <span>New chat</span>
+        </button>
+        <div class="sidebar-caption">YOUR ASSISTANT</div>
+        <div class="sidebar-entry">
+          <svg class="sidebar-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg>
+          <span>Medical information</span>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="provider"><span class="provider-dot"></span> Powered by Groq</div>
+          <details class="remote-settings">
+            <summary>Remote access settings</summary>
+            <label for="api-token">Bearer token</label>
+            <input id="api-token" type="password" autocomplete="off" placeholder="Only needed when connecting remotely">
+          </details>
+        </div>
+      </aside>
+
+      <main class="app">
+        <header class="topbar">
+          <div class="topbar-title">Medical assistant <span class="model-badge">Qwen · Groq</span></div>
+          <button id="menu-button" class="menu-button" type="button" aria-label="Toggle sidebar">☰</button>
+        </header>
+
+        <section id="messages" class="messages" aria-live="polite">
+          <div class="welcome">
+            <div class="welcome-mark"><img src="/static/medical-icon.svg" alt=""></div>
+            <p class="welcome-kicker">A thoughtful health companion</p>
+            <h1>What would you like to understand?</h1>
+            <p>Ask a health question, share an image, or explore your medical reference.</p>
+            <div class="suggestions" aria-label="Suggested questions">
+              <button type="button" data-prompt="What questions should I ask my doctor about a new medication?">Questions to ask your doctor</button>
+              <button type="button" data-prompt="What information is helpful to track when I have a headache?">Track a symptom</button>
+              <button type="button" data-prompt="Explain this health topic in simple terms: ">Understand a health topic</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="composer-wrap">
+          <form id="chat-form" class="composer">
+            <section id="image-preview" class="image-preview" hidden>
+              <img id="image-preview-img" alt="Selected image preview">
+              <div id="image-name" class="image-name"></div>
+              <button id="remove-image" class="remove-image" type="button" aria-label="Remove image">×</button>
+            </section>
+            <section id="camera-panel" class="camera-panel" hidden>
+              <video id="camera-preview" autoplay muted playsinline></video>
+              <p>Camera preview stays on this device until you take a photo and send it.</p>
+            </section>
+            <textarea id="prompt" rows="1" maxlength="12000" placeholder="Message Medical Assistant"></textarea>
+            <div class="composer-toolbar">
+              <div class="toolbar-left">
+                <label class="icon-button attach-button" for="image" title="Select image" aria-label="Select image">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                </label>
+                <input id="image" type="file" accept="image/*" capture="environment" hidden>
+                <button id="camera" class="icon-button" type="button" title="Use camera" aria-label="Use camera">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+                </button>
+                <button id="snap" class="icon-button snap-button" type="button" title="Take photo" aria-label="Take photo" disabled>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
+                  <span>Snap</span>
+                </button>
+                <button id="mic" class="icon-button" type="button" title="Dictate" aria-label="Dictate">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 18v3m-4 0h8"/></svg>
+                </button>
+                <label class="knowledge-toggle" title="Search the ingested medical reference">
+                  <input id="use-knowledge" type="checkbox">
+                  <span>Reference</span>
+                </label>
+              </div>
+              <button id="send" class="send-button" type="submit" aria-label="Send message" title="Send">↑</button>
+            </div>
+            <span id="media-status" class="media-status" role="status" aria-live="polite"></span>
+          </form>
+          <p class="disclaimer">For general information only—not a diagnosis or a substitute for professional care. For emergencies, contact local emergency services.</p>
+        </div>
+      </main>
+    </div>
+    <script src="/static/app.js?v=4" defer></script>
   </body>
 </html>
