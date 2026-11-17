@@ -1,0 +1,68 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, "Segoe UI", sans-serif;
+  color: #172b3a;
+  background: #f2f7f8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 32px 16px;
+}
+
+.app {
+  width: min(760px, 100%);
+  min-height: min(820px, calc(100vh - 64px));
+  margin: 0 auto;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: #fff;
+  border: 1px solid #dce8eb;
+  border-radius: 18px;
+  box-shadow: 0 16px 48px #163a4a12;
+}
+
+header h1 { margin: 4px 0 10px; font-size: clamp(1.6rem, 5vw, 2.2rem); }
+.eyebrow { margin: 0; color: #087f8c; font-size: .75rem; font-weight: 800; letter-spacing: .14em; }
+.notice { margin: 0; color: #526975; line-height: 1.5; }
+
+.settings { display: grid; gap: 6px; }
+.settings label { font-size: .85rem; font-weight: 650; }
+input, textarea, button { font: inherit; }
+#api-token, textarea { width: 100%; padding: 12px; border: 1px solid #cbd9de; border-radius: 9px; }
+
+.messages {
+  flex: 1;
+  min-height: 240px;
+  max-height: 430px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px;
+}
+
+.message { max-width: 90%; padding: 12px 14px; border-radius: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.message strong { font-size: .78rem; }
+.message p { margin: 4px 0 0; white-space: pre-wrap; }
+.message.assistant { align-self: flex-start; background: #edf5f6; }
+.message.user { align-self: flex-end; background: #d7f0ec; }
+.message.error { align-self: stretch; max-width: 100%; color: #8d231d; background: #fff0ee; }
+
+.composer { display: grid; gap: 10px; }
+.knowledge-toggle { display: flex; align-items: center; gap: 8px; color: #526975; font-size: .9rem; }
+.composer-actions { display: flex; align-items: center; gap: 12px; }
+.file-button { cursor: pointer; color: #087f8c; font-weight: 650; }
+.image-name { flex: 1; overflow: hidden; color: #526975; font-size: .85rem; text-overflow: ellipsis; white-space: nowrap; }
+button { padding: 10px 20px; border: 0; border-radius: 9px; color: #fff; background: #087f8c; cursor: pointer; font-weight: 700; }
+button:disabled { cursor: wait; opacity: .6; }
+
+@media (max-width: 520px) {
+  body { padding: 0; }
+  .app { min-height: 100vh; padding: 20px 16px; border: 0; border-radius: 0; }
+}

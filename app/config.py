@@ -16,14 +16,22 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-    OPENAI_API_KEY: str 
+    GROQ_API_KEY: str
     PINECONE_API_KEY: str
     TAVILY_API_KEY: str
-    PINECONE_INDEX: str = "medical-agent-demo"
-    OPENAI_CHAT_MODEL: str = "gpt-4.1-mini"
-    OPENAI_EMBED_MODEL: str = "text-embedding-3-small"
-    OPENAI_VISION_MODEL: str = "gpt-4.1-vision"
-    API_TOKEN: str 
+    PINECONE_INDEX: str = "medical-agent-local-embeddings"
+    LOCAL_EMBED_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+    GROQ_CHAT_MODEL: str = "llama-3.3-70b-versatile"
+    GROQ_VISION_MODEL: str = "meta-llama/llama-4-scout-17b-16e-instruct"
+    API_TOKEN: str
     ALLOWED_ORIGINS: str = "http://localhost:8000,http://127.0.0.1:8000"
+
+    @property
+    def chat_model(self) -> str:
+        return self.GROQ_CHAT_MODEL
+
+    @property
+    def vision_model(self) -> str:
+        return self.GROQ_VISION_MODEL
 
 settings = Settings()

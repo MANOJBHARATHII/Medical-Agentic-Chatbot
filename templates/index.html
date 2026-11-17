@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Medical Information Assistant</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <main class="app">
+      <header>
+        <p class="eyebrow">GROQ-POWERED</p>
+        <h1>Medical Information Assistant</h1>
+        <p class="notice">For general information only; not a diagnosis or a replacement for professional care. For emergencies, contact local emergency services.</p>
+      </header>
+
+      <section class="settings" aria-label="Connection settings">
+        <label for="api-token">App API token</label>
+        <input id="api-token" type="password" autocomplete="off" placeholder="Enter API_TOKEN from your .env file">
+      </section>
+
+      <section id="messages" class="messages" aria-live="polite">
+        <article class="message assistant">
+          <strong>Assistant</strong>
+          <p>Ask a health-information question. You can optionally attach an image or search your ingested reference book.</p>
+        </article>
+      </section>
+
+      <form id="chat-form" class="composer">
+        <label class="knowledge-toggle">
+          <input id="use-knowledge" type="checkbox">
+          Search the reference knowledge base
+        </label>
+        <textarea id="prompt" rows="3" maxlength="12000" required placeholder="Type your question..."></textarea>
+        <div class="composer-actions">
+          <label class="file-button" for="image">Attach image</label>
+          <input id="image" type="file" accept="image/*" hidden>
+          <span id="image-name" class="image-name"></span>
+          <button id="send" type="submit">Send</button>
+        </div>
+      </form>
+    </main>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
